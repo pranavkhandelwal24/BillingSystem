@@ -9,6 +9,7 @@
         <li><a href="<%= request.getContextPath() %>/jsp/stockReport.jsp">View & Manage Stock</a></li>
         <li><a href="<%= request.getContextPath() %>/jsp/addSeller.jsp">Add Sellers</a></li>
         <li><a href="<%= request.getContextPath() %>/jsp/stockHistory.jsp">Stock History</a></li>
+        <li><a href="<%= request.getContextPath() %>/jsp/viewSalesReport.jsp">View Stock Report</a></li>
         
     </ul>
 </div>
