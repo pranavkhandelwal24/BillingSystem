@@ -1,0 +1,35 @@
+# ===== Java & Eclipse =====
+.classpath
+.project
+.settings/
+target/
+bin/
+build/
+*.class
+
+# ===== IntelliJ =====
+.idea/
+*.iml
+
+# ===== OS files =====
+.DS_Store
+Thumbs.db
+
+# ===== Java archives =====
+*.jar
+*.war
+*.ear
+*.log
+
+# ===== Sensitive Config =====
+db.properties
+mail.properties
+.env
+
+# ===== Git =====
+*.orig
+*.rej
+*.swp
+*.swo
+*.bak
+*.tmp

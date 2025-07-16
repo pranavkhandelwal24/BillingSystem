@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
 import com.util.DBConnection;
+import com.util.MailConfig;
 
 @WebServlet("/sendInvoice")
 public class SendInvoiceServlet extends HttpServlet {
@@ -97,8 +98,8 @@ public class SendInvoiceServlet extends HttpServlet {
     }
 
     private void sendEmail(String to, String subject, String htmlBody) throws MessagingException {
-        final String from = "testbotpranav@gmail.com"; // replace with your sender email
-        final String pass = "nufrwezsmsvtitdb"; // replace with your sender email password
+        final String from = MailConfig.getEmail(); // replace with your sender email
+        final String pass = MailConfig.getPassword(); // replace with your sender email password
 
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com"); // for Gmail

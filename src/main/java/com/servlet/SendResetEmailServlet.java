@@ -1,6 +1,7 @@
 package com.servlet;
 
 import com.util.DBConnection;
+import com.util.MailConfig;
 
 import javax.mail.*;
 import javax.mail.internet.*;
@@ -18,8 +19,8 @@ public class SendResetEmailServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final String EMAIL_FROM = "testbotpranav@gmail.com";
-    private static final String EMAIL_PASSWORD = "nufrwezsmsvtitdb"; // 🔐 Replace with App Password if using Gmail
+	private static final String EMAIL_FROM = MailConfig.getEmail();
+	private static final String EMAIL_PASSWORD = MailConfig.getPassword();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
