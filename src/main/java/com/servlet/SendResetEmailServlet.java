@@ -72,6 +72,8 @@ public class SendResetEmailServlet extends HttpServlet {
             props.put("mail.smtp.port", "587");
             props.put("mail.smtp.auth", "true");
             props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.ssl.protocols", "TLSv1.2 TLSv1.3");
+            props.put("mail.debug", "true");
 
             Session mailSession = Session.getInstance(props, new Authenticator() {
                 protected PasswordAuthentication getPasswordAuthentication() {
