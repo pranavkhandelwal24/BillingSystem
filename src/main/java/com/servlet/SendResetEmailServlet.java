@@ -74,6 +74,8 @@ public class SendResetEmailServlet extends HttpServlet {
             props.put("mail.smtp.starttls.enable", "true");
             props.put("mail.smtp.ssl.protocols", "TLSv1.2 TLSv1.3");
             props.put("mail.debug", "true");
+            props.put("mail.smtp.connectiontimeout", "10000"); // 10s connection timeout
+            props.put("mail.smtp.timeout", "10000"); // 10s read/write socket timeout
 
             Session mailSession = Session.getInstance(props, new Authenticator() {
                 protected PasswordAuthentication getPasswordAuthentication() {
