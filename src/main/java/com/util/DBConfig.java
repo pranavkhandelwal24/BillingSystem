@@ -4,9 +4,9 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class DBConfig {
-    private static String url;
-    private static String user;
-    private static String password;
+    private static String url = "jdbc:mysql://pranavkhandelwal24-nwrregister.i.aivencloud.com:12438/tally_system?ssl-mode=REQUIRED";
+    private static String user = "avnadmin";
+    private static String password = "AVNS_Adj10hYW-Y7UfsohGWv";
 
     static {
         try {

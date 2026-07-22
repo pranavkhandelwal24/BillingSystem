@@ -4,8 +4,8 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class MailConfig {
-    private static String email;
-    private static String password;
+    private static String email = "testbotpranav@gmail.com";
+    private static String password = "ujzkixdbwyunttmc";
 
     static {
         try {
