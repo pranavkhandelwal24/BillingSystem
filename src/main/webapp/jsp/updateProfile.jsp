@@ -6,7 +6,7 @@
 <%
     Integer userId = (Integer) session.getAttribute("userId");
     if (userId == null) {
-        response.sendRedirect("index.jsp");
+        response.sendRedirect(request.getContextPath() + "/index.jsp");
         return;
     }
 
@@ -39,54 +39,55 @@
 %>
 
 <%@ include file="header.jsp" %>
-<%@ include file="sidebar.jsp" %>
 
-<div style="padding: 20px;">
-    <h2>Update Profile</h2>
+<h2 class="page-title">Update Profile</h2>
 
+<div class="card" style="max-width: 700px;">
     <form action="../updateProfile" method="post" enctype="multipart/form-data">
-        <table cellpadding="10">
-            <tr>
-                <td>Name:</td>
-                <td><input type="text" name="name" value="<%= name %>" readonly /></td>
-            </tr>
-            <tr>
-                <td>Email:</td>
-                <td><input type="email" name="email" value="<%= email %>" required /></td>
-            </tr>
-            <tr>
-                <td>Phone:</td>
-                <td><input type="text" name="phone" value="<%= phone %>" /></td>
-            </tr>
-            <tr>
-                <td>GST Number:</td>
-                <td><input type="text" name="gst_number" value="<%= gst %>" /></td>
-            </tr>
-            <tr>
-                <td>Address:</td>
-                <td><textarea name="address"><%= address %></textarea></td>
-            </tr>
-            <tr>
-                <td>Logo:</td>
-                <td>
-                    <% if (logoUrl != null && !logoUrl.isEmpty()) { %>
-                        <img id="logoPreview" src="<%= logoUrl %>" alt="Company Logo" style="max-height: 100px;" /><br>
-                    <% } else { %>
-                        <img id="logoPreview" src="" style="max-height: 100px; display:none;" /><br>
-                    <% } %>
-                    <input type="file" name="logo" accept="image/*" onchange="previewLogo(this)">
-                </td>
-            </tr>
-            <tr>
-                <td>New Password:</td>
-                <td><input type="password" name="new_password" placeholder="Leave blank to keep old password" /></td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <input type="submit" value="Update Profile" />
-                </td>
-            </tr>
-        </table>
+        
+        <div class="form-group">
+            <label for="name">Name (Read-only)</label>
+            <input type="text" id="name" name="name" value="<%= name %>" readonly style="background-color: #f1f5f9; cursor: not-allowed;" />
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" value="<%= email %>" required />
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="text" id="phone" name="phone" value="<%= phone %>" />
+        </div>
+
+        <div class="form-group">
+            <label for="gst_number">GST Number</label>
+            <input type="text" id="gst_number" name="gst_number" value="<%= gst %>" />
+        </div>
+
+        <div class="form-group">
+            <label for="address">Address</label>
+            <textarea id="address" name="address"><%= address %></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Company Logo</label>
+            <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 12px; margin-top: 5px;">
+                <% if (logoUrl != null && !logoUrl.isEmpty()) { %>
+                    <img id="logoPreview" src="<%= logoUrl %>" alt="Company Logo" style="max-height: 80px; border: 1px solid var(--border-color); padding: 5px; border-radius: var(--radius);" />
+                <% } else { %>
+                    <img id="logoPreview" src="" style="max-height: 80px; display:none; border: 1px solid var(--border-color); padding: 5px; border-radius: var(--radius);" />
+                <% } %>
+                <input type="file" name="logo" accept="image/*" onchange="previewLogo(this)" style="max-width: 300px;" />
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+            <label for="new_password">New Password (Optional)</label>
+            <input type="password" id="new_password" name="new_password" placeholder="Leave blank to keep existing password" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Profile Changes</button>
     </form>
 </div>
 

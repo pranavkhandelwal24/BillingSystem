@@ -84,45 +84,19 @@ public class SendInvoiceServlet extends HttpServlet {
                 grandTotal += totalAmt;
             }
             body.append("</table>");
-            body.append("<h4>Total Payable: ₹").append(String.format("%.2f", grandTotal)).append("</h4>");
+            body.append("<h4>Total Payable: Rs. ").append(String.format("%.2f", grandTotal)).append("</h4>");
 
             // Send email
-            sendEmail(customerEmail, "Invoice: " + invoice, body.toString());
-
-            response.sendRedirect("jsp/viewBills.jsp?billId=" + billId + "&emailSent=true");
+            boolean sent = MailConfig.sendEmail(customerEmail, "Invoice: " + invoice, body.toString());
+            if (sent) {
+                response.sendRedirect("jsp/viewBills.jsp?billId=" + billId + "&emailSent=true");
+            } else {
+                response.getWriter().println("Failed to send email via Resend.");
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
             response.getWriter().println("Error sending invoice: " + e.getMessage());
         }
-    }
-
-    private void sendEmail(String to, String subject, String htmlBody) throws MessagingException {
-        final String from = MailConfig.getEmail(); // replace with your sender email
-        final String pass = MailConfig.getPassword(); // replace with your sender email password
-
-        Properties props = new Properties();
-        props.put("mail.smtp.host", "smtp.gmail.com"); // for Gmail
-        props.put("mail.smtp.port", "587");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true"); // TLS
-        props.put("mail.smtp.ssl.protocols", "TLSv1.2 TLSv1.3");
-        props.put("mail.debug", "true");
-        props.put("mail.smtp.connectiontimeout", "10000"); // 10s connection timeout
-        props.put("mail.smtp.timeout", "10000"); // 10s read/write socket timeout
-
-        Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(from, pass);
-            }
-        });
-
-        Message msg = new MimeMessage(session);
-        msg.setFrom(new InternetAddress(from));
-        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-        msg.setSubject(subject);
-        msg.setContent(htmlBody, "text/html");
-
-        Transport.send(msg);
     }
 }

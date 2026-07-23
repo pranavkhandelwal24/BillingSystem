@@ -5,30 +5,32 @@
 <%
     Integer userId = (Integer) session.getAttribute("userId");
     if (userId == null) {
-        response.sendRedirect("index.jsp");
+        response.sendRedirect(request.getContextPath() + "/index.jsp");
         return;
     }
 %>
 
 <%@ include file="header.jsp" %>
-<%@ include file="sidebar.jsp" %>
 
-<div class="main-content" style="padding: 20px;">
-    <h2>Sales Report</h2>
+<h2 class="page-title">Sales & Stock Report</h2>
 
-    <table border="1" cellspacing="0" cellpadding="10" width="100%">
-        <tr>
-            <th>Invoice No.</th>
-            <th>Date</th>
-            <th>Customer</th>
-            <th>Item</th>
-            <th>Qty</th>
-            <th>Price (₹)</th>
-            <th>GST (%)</th>
-            <th>Seller Firm</th>
-            <th>GST Number</th>
-        </tr>
-
+<div class="card">
+    <div style="overflow-x: auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Invoice No</th>
+                    <th>Date Sold</th>
+                    <th>Customer Name</th>
+                    <th>Item Description</th>
+                    <th>Quantity Sold</th>
+                    <th>Unit Price (Rs.)</th>
+                    <th>GST Rate</th>
+                    <th>Seller Firm</th>
+                    <th>GST Number</th>
+                </tr>
+            </thead>
+            <tbody>
         <%
             Connection conn = null;
             PreparedStatement ps = null;
@@ -53,23 +55,36 @@
                 ps.setInt(2, userId);
                 rs = ps.executeQuery();
 
+                boolean hasData = false;
                 while (rs.next()) {
+                    hasData = true;
         %>
-        <tr>
-            <td><%= rs.getString("invoice_number") %></td>
-            <td><%= rs.getTimestamp("date") %></td>
-            <td><%= rs.getString("customer_name") %></td>
-            <td><%= rs.getString("item_name") %></td>
-            <td><%= rs.getInt("quantity") %></td>
-            <td>₹<%= rs.getDouble("price") %></td>
-            <td><%= rs.getDouble("gst_rate") %>%</td>
-            <td><%= rs.getString("firm_name") != null ? rs.getString("firm_name") : "N/A" %></td>
-            <td><%= rs.getString("gst_number") != null ? rs.getString("gst_number") : "N/A" %></td>
-        </tr>
+                <tr>
+                    <td style="font-weight: 600;"><%= rs.getString("invoice_number") %></td>
+                    <td><%= rs.getTimestamp("date") %></td>
+                    <td><%= rs.getString("customer_name") %></td>
+                    <td style="font-weight: 500;"><%= rs.getString("item_name") %></td>
+                    <td><%= rs.getInt("quantity") %></td>
+                    <td>Rs. <%= String.format("%.2f", rs.getDouble("price")) %></td>
+                    <td><%= rs.getDouble("gst_rate") %>%</td>
+                    <td><%= rs.getString("firm_name") != null ? rs.getString("firm_name") : "N/A" %></td>
+                    <td><%= rs.getString("gst_number") != null ? rs.getString("gst_number") : "N/A" %></td>
+                </tr>
+        <%
+                }
+                if (!hasData) {
+        %>
+                <tr>
+                    <td colspan="9" style="text-align: center; color: var(--text-secondary); padding: 30px 10px;">No sales transactions recorded yet.</td>
+                </tr>
         <%
                 }
             } catch (Exception e) {
-                out.println("<tr><td colspan='9' style='color:red;'>Error loading report: " + e.getMessage() + "</td></tr>");
+        %>
+                <tr>
+                    <td colspan="9" style="color: var(--danger-color); font-weight: 500; text-align: center;">Error loading sales report: <%= e.getMessage() %></td>
+                </tr>
+        <%
                 e.printStackTrace();
             } finally {
                 if (rs != null) rs.close();
@@ -77,7 +92,9 @@
                 if (conn != null) conn.close();
             }
         %>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <%@ include file="footer.jsp" %>

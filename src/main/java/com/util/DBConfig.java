@@ -18,9 +18,9 @@ public class DBConfig {
                 url = props.getProperty("db.url");
                 user = props.getProperty("db.user");
                 password = props.getProperty("db.password");
-                System.out.println("✅ db.properties loaded successfully");
+                System.out.println("Success: db.properties loaded successfully");
             } else {
-                System.out.println("⚠️ db.properties file not found!");
+                System.out.println("Warning: db.properties file not found!");
             }
 
             // Fallback to Environment Variables

@@ -2,59 +2,27 @@
 <%@ page session="true" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Stock Report</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .layout-container {
-            display: flex;
-            min-height: 80vh;
-        }
-        .main-content {
-            flex: 1;
-            padding: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        th, td {
-            border: 1px solid #aaa;
-            padding: 10px;
-            text-align: center;
-        }
-        select, input[type="number"], input[type="submit"] {
-            padding: 5px;
-        }
-    </style>
-</head>
-<body>
-
 <%@ include file="header.jsp" %>
 
-<div class="layout-container">
-    <%@ include file="sidebar.jsp" %>
+<h2 class="page-title">Manage Stock</h2>
 
-    <div class="main-content">
-        <h2>Stock Report</h2>
-
-        <table>
-            <tr>
-                <th>Item Name</th>
-                <th>Price (₹)</th>
-                <th>Quantity Left</th>
-                <th>Restock</th>
-                <th>Delete</th>
-            </tr>
+<div class="card">
+    <div style="overflow-x: auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Unit Price (Rs.)</th>
+                    <th>Current Quantity</th>
+                    <th>Restock Item</th>
+                    <th style="width: 100px; text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
             <%
                 Integer userId = (Integer) session.getAttribute("userId");
                 if (userId == null) {
-                    response.sendRedirect("index.jsp");
+                    response.sendRedirect(request.getContextPath() + "/index.jsp");
                     return;
                 }
 
@@ -68,22 +36,32 @@
                     stmt.setInt(1, userId);
                     rs = stmt.executeQuery();
 
+                    boolean hasItems = false;
                     while (rs.next()) {
+                        hasItems = true;
                         int itemId = rs.getInt("id");
                         String name = rs.getString("name");
                         double price = rs.getDouble("price");
                         int quantity = rs.getInt("quantity");
+                        
+                        boolean isLowStock = quantity <= 5;
             %>
             <tr>
-                <td><%= name %></td>
-                <td><%= String.format("%.2f", price) %></td>
-                <td><%= quantity %></td>
+                <td style="font-weight: 600;"><%= name %></td>
+                <td>Rs. <%= String.format("%.2f", price) %></td>
                 <td>
-                    <form action="../restockItem" method="post" style="display:inline;">
+                    <% if (isLowStock) { %>
+                        <span class="badge badge-danger" style="font-weight: 600;"><%= quantity %> (Low Stock)</span>
+                    <% } else { %>
+                        <span class="badge badge-success" style="background-color: #ecfdf5; color: #047857;"><%= quantity %></span>
+                    <% } %>
+                </td>
+                <td style="background-color: #fcfdfe;">
+                    <form action="../restockItem" method="post" style="display: flex; gap: 8px; align-items: center; justify-content: start; flex-wrap: nowrap; margin: 0;">
                         <input type="hidden" name="itemId" value="<%= itemId %>">
-                        <input type="number" name="addQuantity" min="1" placeholder="Qty" required style="width: 60px;" />
+                        <input type="number" name="addQuantity" min="1" placeholder="Add Qty" required style="max-width: 90px; padding: 5px 8px; font-size: 13px;" />
 
-                        <select name="sellerId" required>
+                        <select name="sellerId" required style="max-width: 180px; padding: 5px 8px; font-size: 13px;">
                             <option value="">Select Seller</option>
                             <%
                                 Connection sellerConn = DBConnection.getConnection();
@@ -100,20 +78,31 @@
                             %>
                         </select>
 
-                        <input type="submit" value="Add">
+                        <button type="submit" class="btn btn-secondary btn-sm" style="padding: 5px 12px;">Restock</button>
                     </form>
                 </td>
-                <td>
-                    <form action="../deleteItem" method="post" onsubmit="return confirm('Are you sure?');">
+                <td style="text-align: center;">
+                    <form action="../deleteItem" method="post" onsubmit="return confirm('Are you sure you want to delete this item?');" style="margin: 0;">
                         <input type="hidden" name="itemId" value="<%= itemId %>">
-                        <input type="submit" value="Delete">
+                        <button type="submit" class="btn btn-danger btn-sm" style="padding: 4px 10px; background-color: #fef2f2; color: var(--danger-color); border-color: #fca5a5;">Delete</button>
                     </form>
                 </td>
             </tr>
             <%
                     }
+                    if (!hasItems) {
+            %>
+            <tr>
+                <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 30px 10px;">No items registered in stock.</td>
+            </tr>
+            <%
+                    }
                 } catch (Exception e) {
-                    out.println("<p style='color:red;'>Error loading stock: " + e.getMessage() + "</p>");
+            %>
+            <tr>
+                <td colspan="5" style="color: var(--danger-color); font-weight: 500; text-align: center;">Error loading stock: <%= e.getMessage() %></td>
+            </tr>
+            <%
                     e.printStackTrace();
                 } finally {
                     if (rs != null) rs.close();
@@ -121,10 +110,9 @@
                     if (conn != null) conn.close();
                 }
             %>
+            </tbody>
         </table>
     </div>
 </div>
 
 <%@ include file="footer.jsp" %>
-</body>
-</html>

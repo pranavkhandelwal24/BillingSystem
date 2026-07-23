@@ -3,84 +3,30 @@
 <%@ page session="true" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>All Bills - Tally System</title>
-    <style>
-        .layout-container {
-            display: flex;
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        table, th, td {
-            border: 1px solid #aaa;
-        }
-
-        th, td {
-            padding: 10px;
-            text-align: center;
-        }
-
-        .paid {
-            color: green;
-            font-weight: bold;
-        }
-
-        .pending {
-            color: red;
-            font-weight: bold;
-        }
-
-        .inline-form input[type="number"],
-        .inline-form select {
-            padding: 4px;
-            width: 100px;
-        }
-
-        .inline-form input[type="submit"] {
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-
 <%@ include file="header.jsp" %>
 
-<div class="layout-container">
-    <%@ include file="sidebar.jsp" %>
+<h2 class="page-title">All Invoices & Bills</h2>
 
-    <div class="main-content">
-        <h2>All Bills</h2>
-
-        <table>
-            <tr>
-                <th>Invoice #</th>
-                <th>Bill ID</th>
-                <th>Customer</th>
-                <th>Date</th>
-                <th>Total Amount</th>
-                <th>Payment Status</th>
-                <th>Paid Amount</th>
-                <th>Payment Date</th>
-                <th>Actions</th>
-            </tr>
-
+<div class="card">
+    <div style="overflow-x: auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Invoice No</th>
+                    <th>Customer Name</th>
+                    <th>Date</th>
+                    <th>Total Amount</th>
+                    <th>Payment Status</th>
+                    <th>Paid Amount</th>
+                    <th>Payment Date</th>
+                    <th style="width: 200px; text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
 <%
     Integer userId = (Integer) session.getAttribute("userId");
     if (userId == null) {
-        response.sendRedirect("index.jsp");
+        response.sendRedirect(request.getContextPath() + "/index.jsp");
         return;
     }
 
@@ -94,7 +40,9 @@
         ps.setInt(1, userId);
         rs = ps.executeQuery();
 
+        boolean hasBills = false;
         while (rs.next()) {
+            hasBills = true;
             int billId = rs.getInt("id");
             String invoiceNumber = rs.getString("invoice_number");
             String customerName = rs.getString("customer_name");
@@ -103,42 +51,58 @@
             String paymentStatus = rs.getString("payment_status");
             double paidAmount = rs.getDouble("paid_amount");
             String paymentDate = rs.getString("payment_date");
+            
+            boolean isPending = "Pending".equalsIgnoreCase(paymentStatus);
+%>
+                <tr>
+                    <td style="font-weight: 600;"><%= invoiceNumber %></td>
+                    <td><%= customerName %></td>
+                    <td><%= date %></td>
+                    <td style="font-weight: 500;">Rs. <%= String.format("%.2f", totalAmount) %></td>
+
+                    <% if (isPending) { %>
+                    <td colspan="3" style="background-color: #fff9f5;">
+                        <form action="<%= request.getContextPath() %>/updatePayment" method="post" style="display: flex; gap: 8px; align-items: center; justify-content: start; flex-wrap: nowrap; margin: 0;">
+                            <input type="hidden" name="billId" value="<%= billId %>" />
+                            <input type="number" name="paidAmount" step="0.01" placeholder="Amount" required style="max-width: 100px; padding: 4px 8px; font-size: 13px;" />
+                            <select name="paymentStatus" style="max-width: 100px; padding: 4px 8px; font-size: 13px;">
+                                <option value="Paid">Paid</option>
+                                <option value="Pending" selected>Pending</option>
+                            </select>
+                            <button type="submit" class="btn btn-secondary btn-sm" style="padding: 4px 10px;">Update</button>
+                        </form>
+                    </td>
+                    <% } else { %>
+                    <td>
+                        <span class="badge badge-success">Paid</span>
+                    </td>
+                    <td style="color: var(--success-color); font-weight: 500;">Rs. <%= String.format("%.2f", paidAmount) %></td>
+                    <td><%= paymentDate != null ? paymentDate : "N/A" %></td>
+                    <% } %>
+
+                    <td style="text-align: center;">
+                        <div style="display: flex; gap: 10px; justify-content: center; align-items: center;">
+                            <a href="<%= request.getContextPath() %>/jsp/viewBills.jsp?billId=<%= billId %>" class="btn btn-secondary btn-sm" style="padding: 3px 8px;">View</a>
+                            <a href="<%= request.getContextPath() %>/jsp/editBill.jsp?billId=<%= billId %>" class="btn btn-secondary btn-sm" style="padding: 3px 8px; color: var(--primary-color);">Edit</a>
+                            <a href="<%= request.getContextPath() %>/deleteBill?billId=<%= billId %>" onclick="return confirm('Are you sure you want to delete this bill?');" class="btn btn-danger btn-sm" style="padding: 3px 8px; background-color: #fef2f2; color: var(--danger-color); border-color: #fca5a5;">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+<%
+        }
+        if (!hasBills) {
 %>
             <tr>
-                <td><%= invoiceNumber %></td>
-                <td><%= billId %></td>
-                <td><%= customerName %></td>
-                <td><%= date %></td>
-                <td>₹<%= String.format("%.2f", totalAmount) %></td>
-
-                <% if ("Pending".equalsIgnoreCase(paymentStatus)) { %>
-                <td colspan="3">
-                    <form action="<%= request.getContextPath() %>/updatePayment" method="post" class="inline-form" style="display: flex; gap: 10px; justify-content: center;">
-                        <input type="hidden" name="billId" value="<%= billId %>" />
-                        <input type="number" name="paidAmount" step="0.01" placeholder="Enter amount" required />
-                        <select name="paymentStatus">
-                            <option value="Paid">Paid</option>
-                            <option value="Pending" selected>Pending</option>
-                        </select>
-                        <input type="submit" value="Update" />
-                    </form>
-                </td>
-                <% } else { %>
-                <td class="paid"><%= paymentStatus %></td>
-                <td>₹<%= String.format("%.2f", paidAmount) %></td>
-                <td><%= paymentDate != null ? paymentDate : "N/A" %></td>
-                <% } %>
-
-                <td>
-                    <a href="<%= request.getContextPath() %>/jsp/viewBills.jsp?billId=<%= billId %>">View</a> |
-                    <a href="<%= request.getContextPath() %>/jsp/editBill.jsp?billId=<%= billId %>">Edit</a> |
-                    <a href="<%= request.getContextPath() %>/deleteBill?billId=<%= billId %>" onclick="return confirm('Are you sure you want to delete this bill?');">Delete</a>
-                </td>
+                <td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 30px 10px;">No bills or invoices issued yet.</td>
             </tr>
 <%
         }
     } catch (Exception e) {
-        out.println("<tr><td colspan='9' style='color:red;'>Error loading bills: " + e.getMessage() + "</td></tr>");
+%>
+        <tr>
+            <td colspan="8" style="color: var(--danger-color); font-weight: 500; text-align: center;">Error loading bills: <%= e.getMessage() %></td>
+        </tr>
+<%
         e.printStackTrace();
     } finally {
         if (rs != null) rs.close();
@@ -146,12 +110,9 @@
         if (conn != null) conn.close();
     }
 %>
-
+            </tbody>
         </table>
     </div>
 </div>
 
 <%@ include file="footer.jsp" %>
-
-</body>
-</html>

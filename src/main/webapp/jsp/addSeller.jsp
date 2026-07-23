@@ -2,47 +2,41 @@
 <%@ page session="true" %>
 <%@ include file="header.jsp" %>
 
-<div style="display: flex; min-height: 80vh;">
-    <%@ include file="sidebar.jsp" %>
+<h2 class="page-title">Add New Seller</h2>
 
-    <div style="flex: 1; padding: 30px;">
-        <h2>Add New Seller</h2>
+<div class="card" style="max-width: 600px;">
+    <% String success = request.getParameter("success"); %>
+    <% String error = request.getParameter("error"); %>
 
-        <% String success = request.getParameter("success"); %>
-        <% String error = request.getParameter("error"); %>
+    <% if ("1".equals(success)) { %>
+        <div class="alert alert-success">Seller added successfully!</div>
+    <% } else if ("1".equals(error)) { %>
+        <div class="alert alert-error">Failed to add seller. Please try again.</div>
+    <% } %>
 
-        <% if ("1".equals(success)) { %>
-            <p style="color: green;">✅ Seller added successfully!</p>
-        <% } else if ("1".equals(error)) { %>
-            <p style="color: red;">❌ Failed to add seller. Please try again.</p>
-        <% } %>
+    <form action="<%= request.getContextPath() %>/addSeller" method="post">
+        <div class="form-group">
+            <label for="firmName">Firm Name</label>
+            <input type="text" name="firmName" id="firmName" placeholder="Seller's Firm Name" required>
+        </div>
 
-        <form action="<%= request.getContextPath() %>/addSeller" method="post">
-            <table cellpadding="10">
-                <tr>
-                    <td><label for="firmName">Firm Name:</label></td>
-                    <td><input type="text" name="firmName" id="firmName" required></td>
-                </tr>
-                <tr>
-                    <td><label for="gstNumber">GST Number:</label></td>
-                    <td><input type="text" name="gstNumber" id="gstNumber" required></td>
-                </tr>
-                <tr>
-                    <td><label for="email">Email:</label></td>
-                    <td><input type="email" name="email" id="email" required></td>
-                </tr>
-                <tr>
-                    <td><label for="phone">Phone:</label></td>
-                    <td><input type="text" name="phone" id="phone" required></td>
-                </tr>
-                <tr>
-                    <td colspan="2" style="text-align: center;">
-                        <input type="submit" value="Add Seller" />
-                    </td>
-                </tr>
-            </table>
-        </form>
-    </div>
+        <div class="form-group">
+            <label for="gstNumber">GST Number</label>
+            <input type="text" name="gstNumber" id="gstNumber" placeholder="Seller's GSTIN" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" name="email" id="email" placeholder="seller@email.com" required>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="text" name="phone" id="phone" placeholder="Phone number" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Seller</button>
+    </form>
 </div>
 
 <%@ include file="footer.jsp" %>

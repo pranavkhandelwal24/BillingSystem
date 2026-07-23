@@ -5,7 +5,7 @@
 <%
     Integer userId = (Integer) session.getAttribute("userId");
     if (userId == null) {
-        response.sendRedirect("index.jsp");
+        response.sendRedirect(request.getContextPath() + "/index.jsp");
         return;
     }
 
@@ -31,7 +31,7 @@
     try {
         conn = DBConnection.getConnection();
 
-        // ✅ Make sure the bill belongs to the logged-in user
+        // Make sure the bill belongs to the logged-in user
         ps = conn.prepareStatement("SELECT * FROM bills WHERE id = ? AND user_id = ?");
         ps.setInt(1, billId);
         ps.setInt(2, userId);
@@ -45,7 +45,7 @@
             paidAmount = rs.getDouble("paid_amount");
             paymentDate = rs.getString("payment_date");
         } else {
-            out.println("Bill not found or you do not have permission to edit this bill.");
+            out.println("Bill not found or access denied.");
             return;
         }
 
@@ -61,16 +61,15 @@
 
 <%@ include file="header.jsp" %>
 
-<div class="main-container" style="display: flex; min-height: 80vh;">
-    <%@ include file="sidebar.jsp" %>
+<h2 class="page-title">Edit Bill</h2>
 
-    <div class="content" style="flex: 1; padding: 20px;">
-        <h2>Edit Bill</h2>
-        <form action="<%= request.getContextPath() %>/updateBill" method="post">
-            <input type="hidden" name="billId" value="<%= billId %>"/>
+<div class="card" style="max-width: 600px;">
+    <form action="<%= request.getContextPath() %>/updateBill" method="post">
+        <input type="hidden" name="billId" value="<%= billId %>"/>
 
-            <label>Customer:</label>
-            <select name="customerId" required>
+        <div class="form-group">
+            <label for="customerId">Customer</label>
+            <select name="customerId" id="customerId" required>
                 <%
                     conn = DBConnection.getConnection();
                     ps = conn.prepareStatement("SELECT * FROM customers WHERE user_id = ?");
@@ -87,30 +86,41 @@
                     ps.close();
                     conn.close();
                 %>
-            </select><br><br>
+            </select>
+        </div>
 
-            <label>Date:</label>
-            <input type="date" name="billDate" value="<%= date %>" required /><br><br>
+        <div class="form-group">
+            <label for="billDate">Bill Date</label>
+            <input type="date" name="billDate" id="billDate" value="<%= date %>" required />
+        </div>
 
-            <label>Total Amount:</label>
-            <input type="number" name="totalAmount" step="0.01" value="<%= totalAmount %>" required /><br><br>
+        <div class="form-group">
+            <label for="totalAmount">Total Amount (Rs.)</label>
+            <input type="number" name="totalAmount" id="totalAmount" step="0.01" value="<%= totalAmount %>" required />
+        </div>
 
-            <h3>Payment Details</h3>
-            <label>Payment Status:</label>
-            <select name="paymentStatus" required>
+        <h3 style="font-size: 15px; font-weight: 600; margin: 25px 0 10px 0; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; color: var(--text-secondary);">Payment Details</h3>
+
+        <div class="form-group">
+            <label for="paymentStatus">Payment Status</label>
+            <select name="paymentStatus" id="paymentStatus" required>
                 <option value="Paid" <%= "Paid".equalsIgnoreCase(paymentStatus) ? "selected" : "" %>>Paid</option>
                 <option value="Pending" <%= "Pending".equalsIgnoreCase(paymentStatus) ? "selected" : "" %>>Pending</option>
-            </select><br><br>
+            </select>
+        </div>
 
-            <label>Paid Amount:</label>
-            <input type="number" name="paidAmount" step="0.01" value="<%= paidAmount %>" required /><br><br>
+        <div class="form-group">
+            <label for="paidAmount">Paid Amount (Rs.)</label>
+            <input type="number" name="paidAmount" id="paidAmount" step="0.01" value="<%= paidAmount %>" required />
+        </div>
 
-            <label>Payment Date:</label>
-            <input type="date" name="paymentDate" value="<%= paymentDate != null ? paymentDate : "" %>" /><br><br>
+        <div class="form-group">
+            <label for="paymentDate">Payment Date</label>
+            <input type="date" name="paymentDate" id="paymentDate" value="<%= paymentDate != null ? paymentDate : "" %>" />
+        </div>
 
-            <input type="submit" value="Update Bill" />
-        </form>
-    </div>
+        <button type="submit" class="btn btn-primary">Update Bill</button>
+    </form>
 </div>
 
 <%@ include file="footer.jsp" %>

@@ -1,65 +1,110 @@
-<div class="register-box">
-    <h2>Register</h2>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Tally Billing System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
+</head>
+<body class="auth-page">
 
-    <% String error = request.getParameter("error"); %>
-    <% String success = request.getParameter("success"); %>
+<div class="auth-card" style="max-width: 500px; margin: 40px auto;">
+    <div class="auth-header">
+        <h2 style="color: var(--primary-color);">Create Account</h2>
+        <p>Register your firm on Tally Billing System</p>
+    </div>
+
+    <% 
+        String error = request.getParameter("error"); 
+        String success = request.getParameter("success"); 
+    %>
     <% if (success != null) { %>
-        <p style="color:green;"><%= success %></p>
-    <% } else if (error != null) { %>
-        <p style="color:red;"><%= error %></p>
+        <div class="alert alert-success"><%= success %></div>
+    <% } %>
+    <% if (error != null) { %>
+        <div class="alert alert-error"><%= error %></div>
     <% } %>
 
     <form action="register" method="post">
         <!-- Company Info -->
-        <label>Company Name:</label>
-        <input type="text" name="companyName" required />
-
-        <label>Your Name:</label>
-        <input type="text" name="name" required />
-
-        <label>Email:</label>
-        <input type="email" name="email" required />
-
-        <label>Phone:</label>
-        <input type="text" name="phone" required />
-
-        <label>Address:</label>
-        <textarea name="address" required></textarea>
-		<br>
-        <label>GST Number:</label>
-        <input type="text" name="gstNumber" required />
-
-        <label>Logo URL:</label>
-        <input type="text" name="logoUrl" placeholder="https://example.com/logo.png" required />
-
-        <!-- Login Info -->
-        <label>Username:</label>
-        <input type="text" name="username" required />
-
-        <label>Password:</label>
-        <input type="password" name="password" id="password" required />
-
-        <label>Confirm Password:</label>
-        <input type="password" name="confirmPassword" id="confirmPassword" required />
-		<br>
-        <!-- Show Password Checkbox (inline) -->
-        <div style="margin-bottom: 15px;">
-            <input type="checkbox" id="showPassword" />
-            <label for="showPassword">Show Password</label>
+        <h3 style="font-size: 15px; font-weight: 600; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; margin-bottom: 15px; color: var(--text-secondary);">Company Details</h3>
+        
+        <div class="form-group">
+            <label for="companyName">Company Name</label>
+            <input type="text" id="companyName" name="companyName" placeholder="e.g. Acme Corp" required />
         </div>
 
-        <!-- Terms -->
-        <div style="margin-bottom: 20px;">
+        <div class="form-group">
+            <label for="gstNumber">GST Number</label>
+            <input type="text" id="gstNumber" name="gstNumber" placeholder="15-digit GSTIN" required />
+        </div>
+
+        <div class="form-group">
+            <label for="logoUrl">Logo URL</label>
+            <input type="text" id="logoUrl" name="logoUrl" placeholder="https://example.com/logo.png" required />
+        </div>
+
+        <div class="form-group">
+            <label for="address">Address</label>
+            <textarea id="address" name="address" placeholder="Company physical address" required></textarea>
+        </div>
+
+        <!-- Personal Info -->
+        <h3 style="font-size: 15px; font-weight: 600; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; margin-bottom: 15px; color: var(--text-secondary); margin-top: 25px;">Owner Details</h3>
+
+        <div class="form-group">
+            <label for="name">Contact Name</label>
+            <input type="text" id="name" name="name" placeholder="Full Name" required />
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="owner@company.com" required />
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="text" id="phone" name="phone" placeholder="Phone number" required />
+        </div>
+
+        <!-- Login Info -->
+        <h3 style="font-size: 15px; font-weight: 600; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; margin-bottom: 15px; color: var(--text-secondary); margin-top: 25px;">Account Details</h3>
+
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Choose username" required />
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Create password" required />
+        </div>
+
+        <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Repeat password" required />
+        </div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="showPassword" />
+            <label for="showPassword">Show Passwords</label>
+        </div>
+
+        <div class="checkbox-group" style="margin-top: 20px;">
             <input type="checkbox" id="terms" required />
             <label for="terms">I agree to the <a href="#">Terms and Conditions</a></label>
         </div>
 
-        <input type="submit" value="Register" />
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 15px;">Register Firm</button>
     </form>
 
-    <p style="text-align:center; margin-top: 20px;">
-        <a href="index.jsp">Back to Login</a>
-    </p>
+    <div class="auth-footer">
+        Already registered? <a href="index.jsp" style="font-weight: 500;">Back to Login</a>
+    </div>
 </div>
 
 <script>
@@ -69,3 +114,6 @@
         document.getElementById("confirmPassword").type = type;
     });
 </script>
+
+</body>
+</html>

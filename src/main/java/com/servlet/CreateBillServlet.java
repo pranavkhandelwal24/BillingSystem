@@ -98,6 +98,10 @@ public class CreateBillServlet extends HttpServlet {
             String insertItemSQL = "INSERT INTO bill_items (bill_id, item_id, price, gst_rate, quantity, user_id) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement itemStmt = conn.prepareStatement(insertItemSQL);
 
+            // Update item stock
+            String updateStockSQL = "UPDATE items SET quantity = quantity - ? WHERE id = ? AND user_id = ?";
+            PreparedStatement stockStmt = conn.prepareStatement(updateStockSQL);
+
             for (BillItem item : billItems) {
                 itemStmt.setInt(1, billId);
                 itemStmt.setInt(2, item.getItemId());
@@ -106,8 +110,17 @@ public class CreateBillServlet extends HttpServlet {
                 itemStmt.setInt(5, item.getQuantity());
                 itemStmt.setInt(6, userId);
                 itemStmt.addBatch();
+
+                stockStmt.setInt(1, item.getQuantity());
+                stockStmt.setInt(2, item.getItemId());
+                stockStmt.setInt(3, userId);
+                stockStmt.addBatch();
             }
             itemStmt.executeBatch();
+            stockStmt.executeBatch();
+
+            itemStmt.close();
+            stockStmt.close();
 
             conn.commit();
             conn.close();

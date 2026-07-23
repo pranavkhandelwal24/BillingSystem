@@ -54,15 +54,35 @@ public class DeleteBillServlet extends HttpServlet {
                 return;
             }
 
-            // Step 1: Delete associated bill items
+            // Step 1: Restore item stock quantities before deletion
+            PreparedStatement selectItems = conn.prepareStatement("SELECT item_id, quantity FROM bill_items WHERE bill_id = ?");
+            selectItems.setInt(1, billId);
+            ResultSet itemsRs = selectItems.executeQuery();
+            
+            PreparedStatement restoreStock = conn.prepareStatement("UPDATE items SET quantity = quantity + ? WHERE id = ? AND user_id = ?");
+            while (itemsRs.next()) {
+                restoreStock.setInt(1, itemsRs.getInt("quantity"));
+                restoreStock.setInt(2, itemsRs.getInt("item_id"));
+                restoreStock.setInt(3, userId);
+                restoreStock.addBatch();
+            }
+            restoreStock.executeBatch();
+            
+            itemsRs.close();
+            selectItems.close();
+            restoreStock.close();
+
+            // Step 2: Delete associated bill items
             PreparedStatement ps1 = conn.prepareStatement("DELETE FROM bill_items WHERE bill_id = ?");
             ps1.setInt(1, billId);
             ps1.executeUpdate();
+            ps1.close();
 
-            // Step 2: Delete bill
+            // Step 3: Delete bill
             PreparedStatement ps2 = conn.prepareStatement("DELETE FROM bills WHERE id = ?");
             ps2.setInt(1, billId);
             ps2.executeUpdate();
+            ps2.close();
 
             response.sendRedirect("jsp/listBills.jsp");
 

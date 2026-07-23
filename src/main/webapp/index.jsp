@@ -1,78 +1,62 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Login - Tally System</title>
-    <style>
-        body {
-            font-family: Arial;
-            background-color: #f9f9f9;
-        }
-        .login-box {
-            width: 350px;
-            margin: 80px auto;
-            padding: 20px;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
-        input[type="text"], input[type="password"] {
-            width: 93%;
-            padding: 10px;
-            margin: 10px 0;
-        }
-        input[type="submit"] {
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .extra-links {
-            margin-top: 10px;
-            font-size: 14px;
-            text-align: center;
-        }
-        .extra-links a {
-            margin: 0 10px;
-            text-decoration: none;
-            color: #007BFF;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Tally Billing System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
 </head>
-<body>
+<body class="auth-page">
 
-<div class="login-box">
-    <h2>Login to Billing System</h2>
-    <% String success = request.getParameter("success"); %>
-<% String error = request.getParameter("error"); %>
+<div class="auth-card">
+    <div class="auth-header">
+        <h2 style="color: var(--primary-color);">Tally Billing System</h2>
+        <p>Sign in to your account</p>
+    </div>
 
-<% if (success != null) { %>
-    <p style="color:green;"><%= success %></p>
-<% } else if (error != null) { %>
-    <p style="color:red;"><%= error %></p>
-<% } %>
+    <% 
+        String success = request.getParameter("success"); 
+        String error = request.getParameter("error"); 
+    %>
     
-
+    <% if (success != null) { %>
+        <div class="alert alert-success"><%= success %></div>
+    <% } %>
+    <% if (error != null) { %>
+        <div class="alert alert-error"><%= error %></div>
+    <% } %>
     <% if ("1".equals(request.getParameter("error"))) { %>
-        <p style="color:red;">Invalid username or password.</p>
+        <div class="alert alert-error">Invalid username or password.</div>
     <% } %>
 
     <form action="login" method="post">
-        <label>Username:</label><br>
-        <input type="text" name="username" required><br>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Enter username" required>
+        </div>
 
-        <label>Password:</label><br>
-        <input type="password" name="password" id="password" required>
-        <input type="checkbox" onclick="togglePassword()"> Show Password<br><br>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter password" required>
+        </div>
 
-        <input type="submit" value="Login">
+        <div class="checkbox-group">
+            <input type="checkbox" id="showPassword" onclick="togglePassword()">
+            <label for="showPassword">Show Password</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Login</button>
     </form>
 
-    <div class="extra-links">
-        <a href="register.jsp">Register</a> |
-        <a href="forgotPassword.jsp">Forgot Password?</a>
+    <div class="auth-footer">
+        Don't have an account? <a href="register.jsp" style="font-weight: 500;">Register</a>
+        <div style="margin-top: 10px;">
+            <a href="forgotPassword.jsp" style="font-size: 13px;">Forgot Password?</a>
+        </div>
     </div>
 </div>
 

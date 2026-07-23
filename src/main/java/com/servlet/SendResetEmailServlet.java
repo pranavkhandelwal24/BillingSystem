@@ -67,44 +67,35 @@ public class SendResetEmailServlet extends HttpServlet {
 
         // ✅ Step 3: Send reset email
         try {
-            Properties props = new Properties();
-            props.put("mail.smtp.host", "smtp.gmail.com");
-            props.put("mail.smtp.port", "587");
-            props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.starttls.enable", "true");
-            props.put("mail.smtp.ssl.protocols", "TLSv1.2 TLSv1.3");
-            props.put("mail.debug", "true");
-            props.put("mail.smtp.connectiontimeout", "10000"); // 10s connection timeout
-            props.put("mail.smtp.timeout", "10000"); // 10s read/write socket timeout
-
-            Session mailSession = Session.getInstance(props, new Authenticator() {
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(EMAIL_FROM, EMAIL_PASSWORD);
-                }
-            });
-
-            Message message = new MimeMessage(mailSession);
-            message.setFrom(new InternetAddress(EMAIL_FROM, "Tally System"));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
-            message.setSubject("Reset Your Password - Tally System");
-
             String resetLink = request.getScheme() + "://" + request.getServerName() + ":" +
                     request.getServerPort() + request.getContextPath() + "/resetPassword.jsp?token=" + token;
 
-            String body = "Hi " + companyName + ",\n\n" +
-                    "Click the link below to reset your password. This link is valid for one-time use:\n\n" +
-                    resetLink + "\n\n" +
-                    "If you didn’t request this, please ignore this email.\n\n" +
-                    "— Tally System Team";
+            String htmlBody = "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;'>" +
+                    "<h2 style='color: #4f46e5;'>Reset Your Password</h2>" +
+                    "<p>Hi " + companyName + ",</p>" +
+                    "<p>We received a request to reset your password for your Tally Billing System account.</p>" +
+                    "<p>Click the button below to choose a new password. This link is valid for one-time use only:</p>" +
+                    "<p style='margin: 30px 0; text-align: center;'>" +
+                    "  <a href='" + resetLink + "' style='background-color: #4f46e5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;'>Reset Password</a>" +
+                    "</p>" +
+                    "<p style='color: #64748b; font-size: 14px;'>Or copy and paste this link into your browser:</p>" +
+                    "<p style='color: #64748b; font-size: 14px; word-break: break-all;'>" + resetLink + "</p>" +
+                    "<p>If you didn't request this, you can safely ignore this email.</p>" +
+                    "<hr style='border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;'>" +
+                    "<p style='color: #64748b; font-size: 12px; text-align: center;'>— Tally Billing System Team</p>" +
+                    "</div>";
 
-            message.setText(body);
-            Transport.send(message);
+            boolean successSent = MailConfig.sendEmail(toEmail, "Reset Your Password - Tally System", htmlBody);
 
-            response.sendRedirect("forgotPassword.jsp?success=Reset link sent to your email.");
+            if (successSent) {
+                response.sendRedirect("forgotPassword.jsp?success=Reset link sent to your email.");
+            } else {
+                response.sendRedirect("forgotPassword.jsp?error=Failed to send email via Resend.");
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.sendRedirect("forgotPassword.jsp?error=Failed to send email.");
+            response.sendRedirect("forgotPassword.jsp?error=Failed to send email: " + e.getMessage());
         }
     }
 }

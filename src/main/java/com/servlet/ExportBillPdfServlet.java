@@ -43,12 +43,12 @@ public class ExportBillPdfServlet extends HttpServlet {
                     int billOwnerId = rs.getInt("user_id");
                     if (billOwnerId != userId) {
                         response.setContentType("text/plain");
-                        response.getWriter().println("❌ Unauthorized access to export this bill.");
+                        response.getWriter().println("Error: Unauthorized access to export this bill.");
                         return;
                     }
                 } else {
                     response.setContentType("text/plain");
-                    response.getWriter().println("❌ Bill not found.");
+                    response.getWriter().println("Error: Bill not found.");
                     return;
                 }
             }
@@ -59,7 +59,7 @@ public class ExportBillPdfServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace(); // Log to Tomcat console
             response.setContentType("text/plain");
-            response.getWriter().println("❌ Error generating PDF: " + e.getMessage());
+            response.getWriter().println("Error generating PDF: " + e.getMessage());
         }
     }
 }

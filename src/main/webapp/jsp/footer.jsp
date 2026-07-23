@@ -1,9 +1,9 @@
-</div> <!-- closes main content div -->
+            </main> <!-- closes content-area -->
+        </div> <!-- closes main-layout -->
 
-<hr/>
-<div class="footer" style="text-align:center; padding:10px;">
-    &copy; 2025 Billing System. All rights reserved.
-</div>
-
+        <footer class="app-footer">
+            <p>&copy; 2026 Tally Billing System. All rights reserved.</p>
+        </footer>
+    </div> <!-- closes app-container -->
 </body>
 </html>

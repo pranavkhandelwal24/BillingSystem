@@ -14,7 +14,7 @@ public class DBConnection {
                 DBConfig.getPassword()
             );
         } catch (Exception e) {
-            System.out.println("❌ DB connection failed: " + e.getMessage());
+            System.out.println("Error: DB connection failed: " + e.getMessage());
             return null;
         }
     }

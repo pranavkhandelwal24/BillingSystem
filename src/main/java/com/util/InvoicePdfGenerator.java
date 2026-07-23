@@ -34,7 +34,7 @@ public class InvoicePdfGenerator {
                 document.add(logo);
             }
         } catch (Exception e) {
-            System.err.println("❌ Failed to load logo: " + e.getMessage());
+            System.err.println("Warning: Failed to load logo: " + e.getMessage());
         }
 
         Paragraph title = new Paragraph("INVOICE", titleFont);
@@ -72,7 +72,7 @@ public class InvoicePdfGenerator {
         ResultSet billRs = billStmt.executeQuery();
 
         if (!billRs.next()) {
-            document.add(new Paragraph("❌ Bill not found or access denied."));
+            document.add(new Paragraph("Error: Bill not found or access denied."));
             document.close();
             return;
         }
@@ -155,7 +155,7 @@ public class InvoicePdfGenerator {
         document.add(table);
 
         // ✅ Grand Total
-        Paragraph totalPara = new Paragraph("Grand Total: ₹" + String.format("%.2f", grandTotal), headerFont);
+        Paragraph totalPara = new Paragraph("Grand Total: Rs. " + String.format("%.2f", grandTotal), headerFont);
         totalPara.setAlignment(Element.ALIGN_RIGHT);
         totalPara.setSpacingBefore(10f);
         document.add(totalPara);
